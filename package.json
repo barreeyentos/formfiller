@@ -1,12 +1,12 @@
 {
   "name": "formfiller",
   "version": "1.0.0",
-  "description": "MyCase FormFiller",
+  "description": "FormFiller",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Alejandro Barrientos",
   "license": "MIT",
   "dependencies": {
     "dotenv": "^8.2.0",

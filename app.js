@@ -6,7 +6,7 @@ const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha')
 const helmet = require('helmet')
 
 const chromeOptions = {
-  headless: true,
+  headless: false,
   args: ['--no-sandbox', '--disable-setuid-sandbox']
 };
 
@@ -51,17 +51,19 @@ app.post('/fill-form', function (req, res) {
     }
 
     for (const property in formFieldValues.checkboxes) {
-        await (async function fillField(sel) {
-        await page.waitForSelector(sel);
-        await page.click(sel)
-        }) (`input[value~='${formFieldValues.checkboxes[property]}']`);
+        for(const checkVal in formFieldValues.checkboxes[property]) {
+            await (async function fillField(sel) {
+            await page.waitForSelector(sel);
+            await page.click(sel)
+            }) (`input[value~='${formFieldValues.checkboxes[property][checkVal]}']`);
+        }
     }
 
     for (const property in formFieldValues.radioButtons) {
         await (async function fillField(sel) {
         await page.waitForSelector(sel);
         await page.click(sel)
-        }) (`input[value~='${formFieldValues.radioButtons[property]}']`);
+        }) (`input[value^='${formFieldValues.radioButtons[property]}']`);
     }
 
     await page.click("#submit-button")

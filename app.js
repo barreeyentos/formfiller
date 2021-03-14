@@ -6,12 +6,12 @@ const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha')
 const helmet = require('helmet')
 
 const chromeOptions = {
-  headless:false,
-  defaultViewport: null
+  headless: true,
+  args: ['--no-sandbox', '--disable-setuid-sandbox']
 };
 
 const app = express()
-const port = 3000
+const port = process.env.PORT
 
 app.use(helmet())
 app.use(express.json())
@@ -26,7 +26,7 @@ app.post('/fill-form', function (req, res) {
             id: '2captcha',
             token: process.env.CAPTCHA_KEY,
             },
-            visualFeedback: true,
+            visualFeedback: false,
         })
     )
 

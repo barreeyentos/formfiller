@@ -34,7 +34,7 @@ app.post('/fill-form', function (req, res) {
     const page = await browser.newPage();
     await page.goto(process.env.FORM_URL);
 
-    //await page.solveRecaptchas()
+    await page.solveRecaptchas()
 
     for (const property in formFieldValues.inputs) {
         await (async function fillField(sel, val) {
@@ -64,12 +64,12 @@ app.post('/fill-form', function (req, res) {
         }) (`input[value~='${formFieldValues.radioButtons[property]}']`);
     }
 
-    //await page.click("#submit-button")
+    await page.click("#submit-button")
   })(req.body.formFieldValues);
 
   res.send('')
 })
 
 app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
+    console.log(`FormFiller listening on port: ${port}`)
 })

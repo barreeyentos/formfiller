@@ -20,53 +20,59 @@ app.use(express.urlencoded({extended: true}))
 app.post('/fill-form', function (req, res) {
 
   (async function contactUsFormFill(formFieldValues) {
-    puppeteer.use(
-        RecaptchaPlugin({
-            provider: {
-            id: '2captcha',
-            token: process.env.CAPTCHA_KEY,
-            },
-            visualFeedback: false,
-        })
-    )
+      try {
+        puppeteer.use(
+            RecaptchaPlugin({
+                provider: {
+                id: '2captcha',
+                token: process.env.CAPTCHA_KEY,
+                },
+                visualFeedback: false,
+            })
+        )
 
-    const browser = await puppeteer.launch(chromeOptions);
-    const page = await browser.newPage();
-    await page.goto(process.env.FORM_URL);
+        const browser = await puppeteer.launch(chromeOptions);
+        const page = await browser.newPage();
+        await page.goto(process.env.FORM_URL);
 
-    await page.solveRecaptchas()
+        await page.solveRecaptchas()
 
-    for (const property in formFieldValues.inputs) {
-        await (async function fillField(sel, val) {
-            await page.waitForSelector(sel);
-            await page.type(sel, val);
-        }) (`input[name='${property}']`, `${formFieldValues.inputs[property]}`);
-    }
+        for (const property in formFieldValues.inputs) {
+            await (async function fillField(sel, val) {
+                await page.waitForSelector(sel);
+                await page.type(sel, val);
+            }) (`input[name='${property}']`, `${formFieldValues.inputs[property]}`);
+        }
 
-    for (const property in formFieldValues.textareas) {
-        await (async function fillField(sel, val) {
-            await page.waitForSelector(sel);
-            await page.type(sel, val);
-        }) (`textarea[name='${property}']`, `${formFieldValues.textareas[property]}`);
-    }
+        for (const property in formFieldValues.textareas) {
+            await (async function fillField(sel, val) {
+                await page.waitForSelector(sel);
+                await page.type(sel, val);
+            }) (`textarea[name='${property}']`, `${formFieldValues.textareas[property]}`);
+        }
 
-    for (const property in formFieldValues.checkboxes) {
-        for(const checkVal in formFieldValues.checkboxes[property]) {
+        for (const property in formFieldValues.checkboxes) {
+            for(const checkVal in formFieldValues.checkboxes[property]) {
+                await (async function fillField(sel) {
+                await page.waitForSelector(sel);
+                await page.click(sel)
+                }) (`input[value~='${formFieldValues.checkboxes[property][checkVal]}']`);
+            }
+        }
+
+        for (const property in formFieldValues.radioButtons) {
             await (async function fillField(sel) {
             await page.waitForSelector(sel);
             await page.click(sel)
-            }) (`input[value~='${formFieldValues.checkboxes[property][checkVal]}']`);
+            }) (`input[value^='${formFieldValues.radioButtons[property]}']`);
         }
-    }
 
-    for (const property in formFieldValues.radioButtons) {
-        await (async function fillField(sel) {
-        await page.waitForSelector(sel);
-        await page.click(sel)
-        }) (`input[value^='${formFieldValues.radioButtons[property]}']`);
-    }
-
-    await page.click("#submit-button")
+        await page.click("#submit-button")
+      } catch (e) {
+          console.log(e)
+      } finally {
+        await browser.close();
+      }
   })(req.body.formFieldValues);
 
   res.send('')

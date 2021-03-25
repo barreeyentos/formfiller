@@ -6,7 +6,7 @@ const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha')
 const helmet = require('helmet')
 
 const chromeOptions = {
-  headless: false,
+  headless: true,
   args: ['--no-sandbox', '--disable-setuid-sandbox']
 };
 
@@ -20,18 +20,18 @@ app.use(express.urlencoded({extended: true}))
 app.post('/fill-form', function (req, res) {
 
   (async function contactUsFormFill(formFieldValues) {
-      try {
-        puppeteer.use(
-            RecaptchaPlugin({
-                provider: {
-                id: '2captcha',
-                token: process.env.CAPTCHA_KEY,
-                },
-                visualFeedback: false,
-            })
-        )
+    puppeteer.use(
+        RecaptchaPlugin({
+            provider: {
+            id: '2captcha',
+            token: process.env.CAPTCHA_KEY,
+            },
+            visualFeedback: false,
+        })
+    )
 
-        const browser = await puppeteer.launch(chromeOptions);
+    const browser = await puppeteer.launch(chromeOptions);
+      try {
         const page = await browser.newPage();
         await page.goto(process.env.FORM_URL);
 

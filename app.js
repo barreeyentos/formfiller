@@ -54,7 +54,7 @@ app.post('/fill-form', function (req, res) {
                 await (async function fillField(sel) {
                 await page.waitForSelector(sel);
                 await page.click(sel)
-                }) (`input[value~='${formFieldValues.checkboxes[property][checkVal]}']`);
+                }) (`input[value^='${formFieldValues.checkboxes[property][checkVal]}']`);
             }
         }
 

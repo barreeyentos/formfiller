@@ -35,8 +35,6 @@ app.post('/fill-form', function (req, res) {
         const page = await browser.newPage();
         await page.goto(process.env.FORM_URL);
 
-        await page.solveRecaptchas()
-
         for (const property in formFieldValues.inputs) {
             await (async function fillField(sel, val) {
                 await page.waitForSelector(sel);
@@ -67,7 +65,9 @@ app.post('/fill-form', function (req, res) {
             }) (`input[value^='${formFieldValues.radioButtons[property]}']`);
         }
 
+        await page.solveRecaptchas()
         await page.click("#submit-button")
+        console.log("submitted form")
       } catch (e) {
           console.log(e)
       } finally {
